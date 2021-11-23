@@ -22,11 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UsuarioRepositoryTest {
-    //Testes de integração
 
-    private static String NOME = "Usuario";
-    private static String EMAIL = "usuario@email.com";
-    private static String SENHA = "1234";
+    private static final String NOME = "Usuario";
+    private static final String EMAIL = "usuario@email.com";
+    private static final String SENHA = "1234";
 
     @Autowired
     UsuarioRepository repository;

@@ -8,7 +8,6 @@ import com.project.myfinances.service.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -36,7 +35,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public Usuario salvarUsuario(@RequestBody Usuario usuario) {
+    public Usuario salvarUsuario(Usuario usuario) {
         validarEmail(usuario.getEmail());
         usuario.setDataCadastro(LocalDateTime.now());
         return repository.save(usuario);
