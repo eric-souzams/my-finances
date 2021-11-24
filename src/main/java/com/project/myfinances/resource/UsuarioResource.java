@@ -6,6 +6,7 @@ import com.project.myfinances.dto.UsuarioDTO;
 import com.project.myfinances.exceptions.ErroAutenticacaoException;
 import com.project.myfinances.exceptions.RegraNegocioException;
 import com.project.myfinances.model.entity.Usuario;
+import com.project.myfinances.service.LancamentoService;
 import com.project.myfinances.service.UsuarioService;
 
 import lombok.AllArgsConstructor;
@@ -13,10 +14,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsuarioResource {
 
     private UsuarioService service;
+    private LancamentoService lancamentoService;
 
     @PostMapping(value = "/autenticar", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> autenticar(@RequestBody LoginDTO dto) {
@@ -49,6 +51,19 @@ public class UsuarioResource {
         } catch (RegraNegocioException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @GetMapping(value = "/{id}/saldo")
+    public ResponseEntity<?> obterSaldo(@PathVariable("id") Long id) {
+        Optional<Usuario> usuario = service.obterPorId(id);
+
+        if (usuario.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        BigDecimal saldo = lancamentoService.obterSaldoPorUsuario(id);
+
+        return ResponseEntity.ok(saldo);
     }
 
 }
