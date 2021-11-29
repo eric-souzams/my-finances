@@ -1,10 +1,8 @@
 package com.project.myfinances.repository;
 
 import com.project.myfinances.model.entity.Lancamento;
-import com.project.myfinances.model.entity.Usuario;
 import com.project.myfinances.model.enums.StatusLancamento;
 import com.project.myfinances.model.enums.TipoLancamento;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest //para teste de integração
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) //para não sobreescrever as configurações de testr
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//para não sobreescrever as configurações de testr
 public class LancamentoRepositoryTest {
 
     @Autowired
@@ -31,6 +30,18 @@ public class LancamentoRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
+
+    public static Lancamento criarLancamento() {
+        return Lancamento.builder()
+                .ano(2019)
+                .mes(1)
+                .descricao("Conta de agua")
+                .valor(BigDecimal.TEN)
+                .tipo(TipoLancamento.RECEITA)
+                .status(StatusLancamento.PENDENTE)
+                .dataCadastro(LocalDateTime.now())
+                .build();
+    }
 
     @Test
     void deveSalvarUmLancamento() {
@@ -43,7 +54,6 @@ public class LancamentoRepositoryTest {
         //then
         assertThat(lancamento.getId()).isNotNull();
     }
-
 
     @Test
     void deveDeletarUmLancamento() {
@@ -94,17 +104,5 @@ public class LancamentoRepositoryTest {
 
         //then
         assertThat(lancamentoEncontrado.isPresent()).isTrue();
-    }
-
-    private Lancamento criarLancamento() {
-        return Lancamento.builder()
-                .ano(2019)
-                .mes(1)
-                .descricao("Conta de agua")
-                .valor(BigDecimal.TEN)
-                .tipo(TipoLancamento.RECEITA)
-                .status(StatusLancamento.PENDENTE)
-                .dataCadastro(LocalDateTime.now())
-                .build();
     }
 }

@@ -4,12 +4,9 @@ import com.project.myfinances.exceptions.ErroAutenticacaoException;
 import com.project.myfinances.exceptions.RegraNegocioException;
 import com.project.myfinances.model.entity.Usuario;
 import com.project.myfinances.repository.UsuarioRepository;
-
 import com.project.myfinances.service.impl.UsuarioServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -87,7 +84,7 @@ public class UsuarioServiceTest {
         //when
         when(repository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-         //then
+        //then
         Throwable exception = catchThrowable(() -> service.autenticar(EMAIL, SENHA));
         assertThat(exception).isInstanceOf(ErroAutenticacaoException.class).hasMessage("Usuário não encontrado.");
     }

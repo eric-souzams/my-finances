@@ -1,12 +1,9 @@
 package com.project.myfinances.repository;
 
 import com.project.myfinances.model.entity.Usuario;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -32,6 +29,10 @@ public class UsuarioRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
+
+    public static Usuario criarMockUsuario() {
+        return Usuario.builder().nome(NOME).email(EMAIL).senha(SENHA).build();
+    }
 
     @Test
     public void deveVerificarAExistenciaDeUmEmail() {
@@ -87,9 +88,5 @@ public class UsuarioRepositoryTest {
 
         //then
         assertThat(result.isPresent()).isFalse();
-    }
-
-    public static Usuario criarMockUsuario() {
-        return Usuario.builder().nome(NOME).email(EMAIL).senha(SENHA).build();
     }
 }
