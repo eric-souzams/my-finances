@@ -1,6 +1,7 @@
 package com.project.myfinances.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.myfinances.dto.LoginDTO;
 import com.project.myfinances.dto.UsuarioDTO;
 import com.project.myfinances.exceptions.ErroAutenticacaoException;
 import com.project.myfinances.exceptions.RegraNegocioException;
@@ -53,7 +54,7 @@ public class UsuarioResourceTest {
     @Test
     void deveAutenticarUmUsuario() throws Exception {
         //given
-        UsuarioDTO dto = UsuarioDTO.builder().email(EMAIL).senha(SENHA).build();
+        LoginDTO dto = LoginDTO.builder().email(EMAIL).senha(SENHA).build();
         Usuario usuario = Usuario.builder().id(ID).nome(NOME).email(EMAIL).senha(SENHA).build();
         String conteudoJson = new ObjectMapper().writeValueAsString(dto);
 
@@ -77,7 +78,7 @@ public class UsuarioResourceTest {
     @Test
     void deveRetornarBadRequestAoFalharNaAutenticacao() throws Exception {
         //given
-        UsuarioDTO dto = UsuarioDTO.builder().email(EMAIL).senha(SENHA).build();
+        LoginDTO dto = LoginDTO.builder().email(EMAIL).senha(SENHA).build();
         String conteudoJson = new ObjectMapper().writeValueAsString(dto);
 
         //when
