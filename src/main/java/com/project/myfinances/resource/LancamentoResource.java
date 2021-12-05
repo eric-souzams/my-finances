@@ -67,12 +67,12 @@ public class LancamentoResource {
                 Lancamento lancamento = converter(dto);
                 lancamento.setId(entidade.getId());
 
-                service.atualizar(lancamento);
+                lancamento = service.atualizar(lancamento);
                 return ResponseEntity.ok(lancamento);
             } catch (RegraNegocioException e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
-        }).orElseGet(() -> new ResponseEntity<>("Lançamento não encontrado", HttpStatus.BAD_REQUEST));
+        }).orElseGet(() -> new ResponseEntity<>("Lançamento não encontrado", HttpStatus.NOT_FOUND));
     }
 
     @PutMapping(value = "/{id}/atualizar-status")
@@ -86,15 +86,15 @@ public class LancamentoResource {
 
             try {
                 entidade.setStatus(statusLancamento);
-                service.atualizar(entidade);
+                entidade = service.atualizar(entidade);
                 return ResponseEntity.ok(entidade);
             } catch (RegraNegocioException e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
             }
-        }).orElseGet(() -> new ResponseEntity<>("Lançamento não encontrado.", HttpStatus.BAD_REQUEST));
+        }).orElseGet(() -> new ResponseEntity<>("Lançamento não encontrado.", HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping(value = "{id}")
+    @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> deletar(@PathVariable("id") Long id) {
         return service.obterPorId(id).map(entidade -> {
            try {
@@ -103,7 +103,7 @@ public class LancamentoResource {
            } catch (RegraNegocioException e) {
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
            }
-        }).orElseGet(() -> new ResponseEntity<>("Lançamento não encontrado", HttpStatus.BAD_REQUEST));
+        }).orElseGet(() -> new ResponseEntity<>("Lançamento não encontrado", HttpStatus.NOT_FOUND));
     }
 
     private Lancamento converter(LancamentoDTO dto) {
