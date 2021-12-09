@@ -1,14 +1,34 @@
+import axios from 'axios';
+
 import { useState } from "react";
+import { useHistory } from 'react-router-dom';
+
 import { Card } from "../components/Card";
 import { FormGroup } from "../components/FormGroup";
 
 export function Login() {
 
+  const API_URL = process.env.REACT_APP_API_URL;
+
+  const history = useHistory();
+
   const[userEmail, setUserEmail] = useState('');
   const[userPassword, setUserPassword] = useState('');
+  const[messageError, setMessageError] = useState(null);
 
-  function handlerJoin() {
-    
+  async function handlerJoin() {
+    await axios.post(API_URL + '/usuarios/autenticar', {
+      email: userEmail,
+      senha: userPassword
+    }).then(response => {
+      history.push('/home');
+    }).catch(erro => {
+      setMessageError(erro.response.data);
+    })
+  }
+
+  function handlerSignup() {
+    history.push('/signup');
   }
 
   return (
@@ -55,6 +75,7 @@ export function Login() {
                       </button>
                       <button 
                         className="btn btn-danger"
+                        onClick={handlerSignup}
                       >
                         Cadastrar
                       </button>
