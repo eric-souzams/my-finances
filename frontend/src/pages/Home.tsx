@@ -1,9 +1,24 @@
-import { useState } from "react";
-import {Link} from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
+import { LocalStorageService } from "../services/localStorageService";
+import { UserService } from "../services/usuarioService";
 
 export function Home() {
 
+    const api = new UserService();
+
     const[balance, setBalance] = useState('0,00');
+
+    useEffect(() => {
+        const data = LocalStorageService.getItem('user_data');
+        
+        api.getUserBalance(data.id)
+        .then(response => {
+            setBalance(response.data);
+        }).catch(erro => {
+            console.log(erro.response);
+        })
+    },[])
 
     return (
         <div className="container">

@@ -3,10 +3,21 @@ import { useHistory } from 'react-router-dom';
 
 import { Card } from "../components/Card";
 import { FormGroup } from "../components/FormGroup";
+import { errorMessage, successMessage } from '../components/Toastr';
+
+import { UserService } from "../services/usuarioService";
+
+type UserProps = {
+	nome: string;
+	email: string;
+	senha: string;
+	confirmarSenha: string;
+}
 
 export function Signup() {
 
     const history = useHistory();
+    const api = new UserService();
 
     const[inputName, setInputName] = useState('');
     const[inputEmail, setInputEmail] = useState('');
@@ -17,15 +28,56 @@ export function Signup() {
         history.push('/login');
     }
 
-    function handlerSignup() {
+    function valid() {
+		const error = [];
 
-    }
+		if (!inputName) {
+			error.push('O campo Nome é obrigatório.');
+		}
 
-    const newUser = {
-        name: inputName,
-        email: inputEmail,
-        password: inputPassword,
-        confirmPassword: inputConfirmPassword
+		if (!inputEmail) {
+			error.push('O campo Email é obrigatório.');
+		} else if(!inputEmail.match(/^[a-z0-9.]+@[a-z0-9]+\.[a-z]/) ){
+			error.push('Informe um Email válido.')
+		}
+
+		if (!inputPassword || !inputConfirmPassword) {
+			error.push('Digite a senha 2 vezes.');
+		} else if (inputPassword !== inputConfirmPassword) {
+			error.push('As senhas informadas não batem.')
+		}
+
+		return error;
+	}
+
+    async function handlerSignup() {
+        const erros = valid();
+
+        if (erros && erros.length > 0) {
+            erros.forEach((msg, index) => {
+                errorMessage(msg);
+            });
+
+            return false;
+        }
+
+        const user = {
+            nome: inputName,
+            email: inputEmail,
+            senha: inputPassword
+        }
+
+        await api.saveNewUser(user)
+        .then(response => {
+            history.push('/login');
+
+            successMessage('Usuário cadastrado com sucesso!');
+            setTimeout(function(){
+                successMessage('Faça login para acessar o sistema.');
+            }, 2000);
+        }).catch(erro => {
+            errorMessage(erro.response.data);
+        });
     }
 
     return (

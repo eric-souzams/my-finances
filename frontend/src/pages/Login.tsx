@@ -1,29 +1,29 @@
-import axios from 'axios';
-
 import { useState } from "react";
 import { useHistory } from 'react-router-dom';
 
 import { Card } from "../components/Card";
 import { FormGroup } from "../components/FormGroup";
+import { errorMessage } from '../components/Toastr';
+
+import { LocalStorageService } from "../services/localStorageService";
+import { UserService } from "../services/usuarioService";
 
 export function Login() {
-
-  const API_URL = process.env.REACT_APP_API_URL;
-
   const history = useHistory();
+  const api = new UserService();
 
   const[userEmail, setUserEmail] = useState('');
   const[userPassword, setUserPassword] = useState('');
-  const[messageError, setMessageError] = useState(null);
 
   async function handlerJoin() {
-    await axios.post(API_URL + '/usuarios/autenticar', {
+    await api.auth({
       email: userEmail,
       senha: userPassword
     }).then(response => {
+      LocalStorageService.addItem('user_data', response.data);
       history.push('/home');
     }).catch(erro => {
-      setMessageError(erro.response.data);
+      errorMessage(erro.response.data)
     })
   }
 
