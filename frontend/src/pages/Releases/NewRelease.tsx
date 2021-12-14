@@ -57,7 +57,6 @@ export function NewRelease() {
 
   function handlerUpdate() {
     const user = LocalStorageService.getItem('user_data');
-
     const data = {
       id: releaseId,
       descricao: inputDescription,
@@ -84,7 +83,6 @@ export function NewRelease() {
 
   async function handlerSave() {
     const user = LocalStorageService.getItem('user_data');
-
     const data = {
       id: releaseId,
       descricao: inputDescription,
@@ -94,6 +92,14 @@ export function NewRelease() {
       tipo: inputType,
       status: null,
       usuario: user.id
+    }
+
+    try {
+      api.valid(data);
+    } catch(erro:any) {
+      const messages = erro.messages; 
+      messages.forEach((msg:string) => errorMessage(msg));
+      return false;
     }
 
     api.saveRelease(data)

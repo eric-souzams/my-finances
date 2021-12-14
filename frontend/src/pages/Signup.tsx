@@ -21,36 +21,17 @@ export function Signup() {
     history.push('/login');
   }
 
-  function valid() {
-    const error = [];
-
-    if (!inputName) {
-      error.push('O campo Nome é obrigatório.');
-    }
-
-    if (!inputEmail) {
-      error.push('O campo Email é obrigatório.');
-    } else if (!inputEmail.match(/^[a-z0-9.]+@[a-z0-9]+\.[a-z]/)) {
-      error.push('Informe um Email válido.')
-    }
-
-    if (!inputPassword || !inputConfirmPassword) {
-      error.push('Digite a senha 2 vezes.');
-    } else if (inputPassword !== inputConfirmPassword) {
-      error.push('As senhas informadas não batem.')
-    }
-
-    return error;
-  }
-
   async function handlerSignup() {
-    const erros = valid();
-
-    if (erros && erros.length > 0) {
-      erros.forEach((msg, index) => {
-        errorMessage(msg);
+    try {
+      api.valid({
+        nome: inputName,
+        email: inputEmail,
+        senha: inputPassword,
+        confirmarSenha: inputConfirmPassword
       });
-
+    } catch(erro:any) {
+      const messages = erro.messages; 
+      messages.forEach((msg:string) => errorMessage(msg));
       return false;
     }
 
@@ -69,7 +50,11 @@ export function Signup() {
           successMessage('Faça login para acessar o sistema.');
         }, 2000);
       }).catch(erro => {
-        errorMessage(erro.response.data);
+        try {
+          errorMessage(erro.response.data);
+        } catch {
+          errorMessage('Houve um erro ao tentar cadastrar um novo Usuário.');
+        }
       });
   }
 

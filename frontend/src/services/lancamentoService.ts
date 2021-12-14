@@ -1,5 +1,7 @@
 import { ApiService } from "./api";
 
+import ErroValidation from '../exceptions/ErroValidation';
+
 type FilterProps = {
   year: string;
   month?: string;
@@ -35,6 +37,34 @@ export class ReleaseService extends ApiService {
 
   constructor() {
     super('/lancamentos');
+  }
+
+  valid(release: any) {
+    const error = <any>[];
+
+    if (!release.descricao) {
+      error.push("Informe a Descrição.")
+    }
+    
+    if (!release.ano) {
+      error.push("Informe o Ano.")
+    }
+
+    if (!release.mes) {
+      error.push("Informe o Mês.")
+    }
+
+    if (!release.valor) {
+      error.push("Informe o Valor.")
+    }
+
+    if (!release.tipo) {
+      error.push("Informe o Tipo.")
+    }
+
+    if (error && error.length > 0) {
+      throw new ErroValidation(error);
+    }
   }
 
   getMonthList() {
