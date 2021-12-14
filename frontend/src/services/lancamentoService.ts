@@ -40,7 +40,7 @@ export class ReleaseService extends ApiService {
   }
 
   valid(release: any) {
-    const error = <any>[];
+    const error = [] as any;
 
     if (!release.descricao) {
       error.push("Informe a Descrição.")
@@ -133,6 +133,10 @@ export class ReleaseService extends ApiService {
 
   updateRelease(release: UpdateReleaseProps) {
     return this.put(`/${release.id}`, release);
+  }
+
+  updateStatus(id:number, status: string) {
+    return this.put(`/${id}/atualizar-status`, { status });
   }
 
 }

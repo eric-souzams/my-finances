@@ -13,6 +13,7 @@ type TableProps = {
   releases: ReleaseProps[];
   editAction: (id: number) => void;
   deleteAction: (release: ReleaseProps) => void;
+  updateAction: (release: ReleaseProps, status: string) => void;
 }
 
 export function ReleaseTable(props: TableProps) {
@@ -26,21 +27,37 @@ export function ReleaseTable(props: TableProps) {
         <td>{release.mes}</td>
         <td>{release.status}</td>
         <td style={{ padding: '5px 0 5px 0' }}>
-          <button 
-            type="button" 
+          {release.status === 'PENDENTE' &&
+            <>
+              <button
+                className="btn btn-success"
+                onClick={() => props.updateAction(release, 'EFETIVADO')}
+                type="button"
+              >
+                Efetivar
+              </button>
+              <button
+                className="btn btn-warning"
+                onClick={() => props.updateAction(release, 'CANCELADO')}
+                type="button"
+              >
+                Cancelar
+              </button>
+            </>
+          }
+          <button
+            type="button"
             className="btn btn-info"
             onClick={() => props.editAction(release.id)}
           >
             Editar
-            <i className="pi pi-pencil"></i>
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="btn btn-warning"
             onClick={() => props.deleteAction(release)}
           >
             Deletar
-            <i className="pi pi-trash"></i>
           </button>
         </td>
       </tr>
@@ -51,7 +68,7 @@ export function ReleaseTable(props: TableProps) {
     <table className="table table-hover table-striped">
       <thead>
         <tr>
-          <th scope="col">Descrição</th>
+          <th scope="col" className='col-md-3'>Descrição</th>
           <th scope="col">Valor</th>
           <th scope="col">Tipo</th>
           <th scope="col">Mês</th>

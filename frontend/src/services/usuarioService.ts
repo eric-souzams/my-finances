@@ -20,7 +20,7 @@ export class UserService extends ApiService {
   }
 
   valid(release: any) {
-    const error = <any>[];
+    const error = [] as any;
 
     if (!release.nome) {
       error.push('O campo Nome é obrigatório.');

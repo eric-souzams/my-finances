@@ -36,7 +36,6 @@ export function Releases() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [deleteRelease, setDeleteRelease] = useState({} as ReleaseProps);
 
-
   async function handlerSearchRelease() {
     if (!inputYear) {
       errorMessage('O preenchimento do campo Ano é obrigatório.');
@@ -87,6 +86,22 @@ export function Releases() {
   function handlerCancel() {
     setShowConfirmModal(false);
     setDeleteRelease({} as ReleaseProps);
+  }
+
+  async function handlerUpdateReleaseStatus(release: ReleaseProps, status:string) {
+
+    await api.updateStatus(release.id, status)
+    .then(response => {
+      const index = releases.indexOf(release);
+      if(index !== -1) {
+        release.status = status;
+        releases[index] = release;
+        setReleases(releases.filter(rel => rel !== null));
+      }
+      successMessage('Status atualizado com sucesso.');
+    }).catch(erro => {
+
+    });
   }
 
   return (
@@ -158,6 +173,7 @@ export function Releases() {
                 releases={releases}
                 editAction={handlerEdit}
                 deleteAction={handlerOpenModal}
+                updateAction={handlerUpdateReleaseStatus}
               />
             </div>
           </div>
