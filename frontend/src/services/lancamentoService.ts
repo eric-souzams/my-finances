@@ -20,6 +20,17 @@ type SaveReleaseProps = {
   usuario: string;
 }
 
+type UpdateReleaseProps = {
+  id: null,
+  descricao: string,
+  valor: string,
+  mes: string,
+  ano: string,
+  tipo: string,
+  status: string;
+  usuario: string;
+}
+
 export class ReleaseService extends ApiService {
 
   constructor() {
@@ -84,6 +95,14 @@ export class ReleaseService extends ApiService {
 
   saveRelease(release: SaveReleaseProps) {
     return this.post('/', release);
+  }
+
+  getById(id:number) {
+    return this.get(`/${id}`);
+  }
+
+  updateRelease(release: UpdateReleaseProps) {
+    return this.put(`/${release.id}`, release);
   }
 
 }

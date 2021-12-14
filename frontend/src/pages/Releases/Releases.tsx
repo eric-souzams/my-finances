@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { Card } from "../../components/Card";
 import { FormGroup } from "../../components/FormGroup";
@@ -22,6 +22,7 @@ type ReleaseProps = {
 
 export function Releases() {
   const api = new ReleaseService();
+  const history = useHistory();
 
   const monthList = api.getMonthList();
   const typeList = api.getTypeList();
@@ -70,7 +71,7 @@ export function Releases() {
   }
 
   async function handlerEdit(id: number) {
-    console.log('edit ', id);
+    history.push(`/new-release/${id}`);
   }
 
   function handlerOpenModal(release: ReleaseProps) {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+import { errorMessage } from "../components/Toastr";
 import { LocalStorageService } from "../services/localStorageService";
 import { UserService } from "../services/usuarioService";
 
@@ -15,7 +16,7 @@ export function Home() {
       .then(response => {
         setBalance(response.data);
       }).catch(erro => {
-        console.log(erro.response);
+        errorMessage('Houve um error ao tentar obter o saldo atual.')
       })
   }, [])
 

@@ -52,6 +52,17 @@ public class LancamentoResource {
         return ResponseEntity.ok(lancamentos);
     }
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<?> obterLancamento(@PathVariable("id") Long id) {
+        Optional<Lancamento> lancamento = service.obterPorId(id);
+
+        if(lancamento.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Lançamento não encontrado");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(converter(lancamento.get()));
+    }
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> salvar(@RequestBody LancamentoDTO dto) {
         try {
@@ -70,6 +81,7 @@ public class LancamentoResource {
             try {
                 Lancamento lancamento = converter(dto);
                 lancamento.setId(entidade.getId());
+                lancamento.setDataCadastro(entidade.getDataCadastro());
 
                 lancamento = service.atualizar(lancamento);
                 return ResponseEntity.ok(lancamento);
@@ -108,6 +120,20 @@ public class LancamentoResource {
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
            }
         }).orElseGet(() -> new ResponseEntity<>("Lançamento não encontrado", HttpStatus.NOT_FOUND));
+    }
+
+    private LancamentoDTO converter(Lancamento lancamento) {
+        return LancamentoDTO.builder()
+                .id(lancamento.getId())
+                .descricao(lancamento.getDescricao())
+                .valor(lancamento.getValor())
+                .mes(lancamento.getMes())
+                .ano(lancamento.getAno())
+                .tipo(lancamento.getTipo().name())
+                .status(lancamento.getStatus().name())
+                .dataCadastro(lancamento.getDataCadastro())
+                .usuario(lancamento.getUsuario().getId())
+                .build();
     }
 
     private Lancamento converter(LancamentoDTO dto) {

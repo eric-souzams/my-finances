@@ -23,7 +23,11 @@ export function Login() {
       LocalStorageService.addItem('user_data', response.data);
       history.push('/home');
     }).catch(erro => {
-      errorMessage(erro.response.data)
+      try {
+        errorMessage(erro.response.data)
+      } catch {
+        errorMessage('Houve um error ao tentar fazer Login.')
+      }
     })
   }
 

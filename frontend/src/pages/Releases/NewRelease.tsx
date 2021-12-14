@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
+
+import { ReleaseService } from "../../services/lancamentoService";
+import { LocalStorageService } from "../../services/localStorageService";
+
 import { Card } from "../../components/Card";
 import { FormGroup } from "../../components/FormGroup";
 import { SelectMenu } from "../../components/SelectMenu";
 import { errorMessage, successMessage } from "../../components/Toastr";
-import { ReleaseService } from "../../services/lancamentoService";
-import { LocalStorageService } from "../../services/localStorageService";
+
+type ParamProps = {
+  id?: any;
+}
 
 export function NewRelease() {
   const api = new ReleaseService();
@@ -24,7 +30,56 @@ export function NewRelease() {
   const [inputType, setInputType] = useState('');
   const [inputStatus, setInputStatus] = useState('');
 
+  const params = useParams<ParamProps>();
+  const release_Id = params.id;
+
+  useEffect(() => {
+    if (release_Id) {
+      new ReleaseService().getById(release_Id)
+        .then(response => {
+          setIsUpdate(true);
+          setReleaseId(response.data.id);
+          setInputDescription(response.data.descricao);
+          setInputValue(response.data.valor);
+          setInputYear(response.data.ano);
+          setInputMonth(response.data.mes);
+          setInputType(response.data.tipo);
+          setInputStatus(response.data.status);
+        }).catch(erro => {
+          try {
+            errorMessage(erro.response.data);
+          } catch {
+            errorMessage('Houve um erro ao tentar obter os dados do Lançamento.');
+          }
+        });
+    }
+  }, [release_Id])
+
   function handlerUpdate() {
+    const user = LocalStorageService.getItem('user_data');
+
+    const data = {
+      id: releaseId,
+      descricao: inputDescription,
+      valor: inputValue,
+      mes: inputMonth,
+      ano: inputYear,
+      tipo: inputType,
+      status: inputStatus,
+      usuario: user.id
+    }
+
+    api.updateRelease(data)
+      .then(response => {
+        history.go(0);
+        successMessage('Lançamento atualizado com sucesso.');
+      }).catch(erro => {
+        try {
+          errorMessage(erro.response.data);
+        } catch {
+          errorMessage('Houve um erro ao tentar atualizar o Lançamento.');
+        }
+      });
   }
 
   async function handlerSave() {
@@ -41,15 +96,17 @@ export function NewRelease() {
       usuario: user.id
     }
 
-    console.log(data);
-
     api.saveRelease(data)
-    .then(response => {
-      history.push('/releases');
-      successMessage('Lançamento cadastrado com sucesso.')
-    }).catch(erro => {
-      errorMessage(erro.response.data)
-    });
+      .then(response => {
+        history.push('/releases');
+        successMessage('Lançamento cadastrado com sucesso.');
+      }).catch(erro => {
+        try {
+          errorMessage(erro.response.data);
+        } catch {
+          errorMessage('Houve um erro ao tentar cadastrar um novo Lançamento.');
+        }
+      });
   }
 
   return (

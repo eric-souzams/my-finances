@@ -19,8 +19,8 @@ export function NavBar() {
                     <ul className="navbar-nav">
                         <NavbarItem to="/home" title="Home" />
                         <NavbarItem to="/releases" title="Lançamentos" />
-                        <NavbarItem to="/signup" title="Usuários" />
                         <NavbarItem to="/login" title="Login" />
+                        <NavbarItem to="/signup" title="Cadastro de Usuário" />
                     </ul>
                 </div>
             </div>

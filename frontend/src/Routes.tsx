@@ -19,7 +19,7 @@ export function Routes() {
                 <Route path="/signup" component={Signup} />
 
                 <Route path="/releases" component={Releases} />
-                <Route path="/new-release" component={NewRelease} />
+                <Route path="/new-release/:id?" component={NewRelease} />
             </Switch>
         </BrowserRouter>
     );
