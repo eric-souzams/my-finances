@@ -68,13 +68,13 @@ export function Login() {
                       </FormGroup>
 
                       <button 
-                        className="btn btn-success mr-2"
+                        className="btn btn-light mr-2"
                         onClick={handlerJoin}
                       >
                         Entrar
                       </button>
                       <button 
-                        className="btn btn-danger"
+                        className="btn btn-success"
                         onClick={handlerSignup}
                       >
                         Cadastrar

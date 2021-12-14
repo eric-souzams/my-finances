@@ -1,15 +1,15 @@
 import { ApiService } from "./api";
 
-type UserProps = {
-	nome: string;
-	email: string;
-	senha: string;
-	confirmarSenha: string;
-}
+// type UserProps = {
+// 	nome: string;
+// 	email: string;
+// 	senha: string;
+// 	confirmarSenha: string;
+// }
 
 export class UserService extends ApiService {
 
-  constructor() {
+  	constructor() {
 		super('/usuarios');
 	}
 

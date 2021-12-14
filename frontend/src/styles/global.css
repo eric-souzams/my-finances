@@ -58,3 +58,7 @@ pre{background:#f7f7f9}
 .splash h1{font-size:2em}
 #banner{margin-bottom:2em;text-align:center}}
 .btn {margin-right: 5px;}
+
+body, input, button, textarea {
+    font: 400 1rem 'Roboto', sans-serif;
+  }
