@@ -1,24 +1,27 @@
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
+
 import { errorMessage } from "../components/Toastr";
-import { LocalStorageService } from "../services/localStorageService";
+
+import { useAuth } from "../hooks/useAuth";
 import { UserService } from "../services/usuarioService";
 
 export function Home() {
-
   const [balance, setBalance] = useState(0);
+  const { authenticatedUser } = useAuth();
   
   useEffect(() => {
     const api = new UserService();
-    const data = LocalStorageService.getItem('user_data');
 
-    api.getUserBalance(data.id)
+    if(authenticatedUser === undefined) return;
+
+    api.getUserBalance(authenticatedUser.id)
       .then(response => {
         setBalance(response.data);
       }).catch(erro => {
         errorMessage('Houve um error ao tentar obter o saldo atual.')
       })
-  }, [])
+  }, [authenticatedUser])
 
   return (
     <div className="container">

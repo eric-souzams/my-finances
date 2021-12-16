@@ -4,13 +4,14 @@ import { useHistory } from 'react-router-dom';
 import { Card } from "../components/Card";
 import { FormGroup } from "../components/FormGroup";
 import { errorMessage } from '../components/Toastr';
+import { useAuth } from "../hooks/useAuth";
 
-import { LocalStorageService } from "../services/localStorageService";
 import { UserService } from "../services/usuarioService";
 
 export function Login() {
   const history = useHistory();
   const api = new UserService();
+  const { startSession } = useAuth();
 
   const[userEmail, setUserEmail] = useState('');
   const[userPassword, setUserPassword] = useState('');
@@ -20,7 +21,7 @@ export function Login() {
       email: userEmail,
       senha: userPassword
     }).then(response => {
-      LocalStorageService.addItem('user_data', response.data);
+      startSession(response.data);
       history.push('/home');
     }).catch(erro => {
       try {

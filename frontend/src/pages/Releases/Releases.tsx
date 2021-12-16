@@ -5,11 +5,11 @@ import { Card } from "../../components/Card";
 import { FormGroup } from "../../components/FormGroup";
 import { SelectMenu } from "../../components/SelectMenu";
 import { ReleaseTable } from "./ReleaseTable";
-import { errorMessage, successMessage } from '../../components/Toastr';
+import { errorMessage, successMessage, warningMesssage } from '../../components/Toastr';
 import { ConfirmModal } from '../../components/ConfirmModal';
 
 import { ReleaseService } from "../../services/lancamentoService";
-import { LocalStorageService } from "../../services/localStorageService";
+import LocalStorageService from "../../services/localStorageService";
 
 type ReleaseProps = {
   id: number;
@@ -53,6 +53,9 @@ export function Releases() {
 
     await api.getUserReleases(filter)
       .then(response => {
+        if (response.data.length < 1) {
+          warningMesssage('Nenhum Lançamento foi encontrado.');
+        }
         setReleases(response.data);
       }).catch(erro => {
         errorMessage('Ocorreu um erro ao tentar obter os Lançamento.');

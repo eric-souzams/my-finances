@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useHistory, useParams } from "react-router-dom";
 
 import { ReleaseService } from "../../services/lancamentoService";
-import { LocalStorageService } from "../../services/localStorageService";
+import LocalStorageService from "../../services/localStorageService";
 
 import { Card } from "../../components/Card";
 import { FormGroup } from "../../components/FormGroup";
