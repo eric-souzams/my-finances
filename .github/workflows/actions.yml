@@ -21,7 +21,7 @@ jobs:
         cache: maven
         
     - name: Build with Maven
-      run: mvn package
+      run: /backend mvn package
       
     - name: Tests with Junit
-      run: mvn test
+      run: /backend mvn test
