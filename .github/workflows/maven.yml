@@ -24,11 +24,6 @@ jobs:
       run: |
         cd backend
         mvn -B package --file pom.xml
-        
-    - name: List Folder
-      run: |
-        cd backend 
-        ls -a
 
     - name: Tests with Junit
       run: |
