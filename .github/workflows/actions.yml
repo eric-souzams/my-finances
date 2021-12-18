@@ -22,7 +22,7 @@ jobs:
         
     
     - name: list all
-      run: 
+      run: |
         cd backend 
         ls -a
         
