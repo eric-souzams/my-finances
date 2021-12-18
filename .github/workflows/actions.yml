@@ -20,6 +20,10 @@ jobs:
         distribution: 'adopt'
         cache: maven
         
+    
+    - name: list all
+      run: ls -a
+        
     - name: Build with Maven
       run: 
         cd tree/main/backend
