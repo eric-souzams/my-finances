@@ -1,5 +1,6 @@
 package com.project.myfinances.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.myfinances.model.enums.StatusLancamento;
 import com.project.myfinances.model.enums.TipoLancamento;
 import lombok.AllArgsConstructor;
@@ -42,7 +43,7 @@ public class Lancamento {
     private BigDecimal valor;
 
     @Column(name = "data_cadastro")
-    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dataCadastro;
 
     @Column(name = "tipo")
