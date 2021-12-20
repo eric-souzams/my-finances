@@ -3,14 +3,14 @@ package com.project.myfinances.service.impl;
 import com.project.myfinances.model.entity.Usuario;
 import com.project.myfinances.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
-@Service
+@Configuration
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UsuarioRepository userRepository;

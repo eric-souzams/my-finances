@@ -8,8 +8,11 @@ import com.project.myfinances.model.entity.Lancamento;
 import com.project.myfinances.model.entity.Usuario;
 import com.project.myfinances.model.enums.StatusLancamento;
 import com.project.myfinances.model.enums.TipoLancamento;
+import com.project.myfinances.repository.UsuarioRepository;
 import com.project.myfinances.service.LancamentoService;
 import com.project.myfinances.service.UsuarioService;
+import com.project.myfinances.service.impl.JwtServiceImpl;
+import com.project.myfinances.service.impl.UserDetailsServiceImpl;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +21,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,8 +34,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -52,6 +56,7 @@ public class LancamentoResourceTest {
     private static final TipoLancamento TIPO = TipoLancamento.RECEITA;
     private static final Long ID_USUARIO = 1L;
     private static final Long ID_LANCAMENTO = 1L;
+    private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjYwMDE2NDAwMjYxMjAsInN1YiI6ImVyaWMzQGVtYWlsLmNvbSIsInVzZXJOYW1lIjoiRXJpYyBNYWdhbGhhZXMiLCJ1c2VySWQiOjE5fQ.4iRue9c4q4O-S_gl20fNi2BmYUfIYo5Po5flmrBjuoAzZFOqRSjETEPwRLkvQTdCl2S81ig1th8BhedDB6Py1Q";
 
     @Autowired
     MockMvc mvc;
@@ -61,6 +66,15 @@ public class LancamentoResourceTest {
 
     @MockBean
     UsuarioService usuarioService;
+
+    @MockBean
+    JwtServiceImpl jwtService;
+
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @MockBean
+    PasswordEncoder passwordEncoder;
 
     @Test
     void deveBuscarUmLancamento() throws Exception {
@@ -78,7 +92,9 @@ public class LancamentoResourceTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .get(API.concat("?usuario={id}"), ID_USUARIO)
                 .accept(JSON)
-                .contentType(JSON);
+                .contentType(JSON)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isOk())
@@ -101,7 +117,9 @@ public class LancamentoResourceTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .get(API.concat("?usuario={id}"), ID_USUARIO)
                 .contentType(JSON)
-                .accept(JSON);
+                .accept(JSON)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isNotFound())
@@ -129,7 +147,9 @@ public class LancamentoResourceTest {
                 .put(API.concat("/{id}/atualizar-status"), ID_LANCAMENTO)
                 .contentType(JSON)
                 .accept(JSON)
-                .content(conteudoJson);
+                .content(conteudoJson)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isOk())
@@ -160,7 +180,9 @@ public class LancamentoResourceTest {
                 .put(API.concat("/{id}/atualizar-status"), ID_LANCAMENTO)
                 .accept(JSON)
                 .contentType(JSON)
-                .content(conteudoJson);
+                .content(conteudoJson)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isBadRequest());
@@ -181,7 +203,9 @@ public class LancamentoResourceTest {
                 .put(API.concat("/{id}/atualizar-status"), ID_LANCAMENTO)
                 .accept(JSON)
                 .contentType(JSON)
-                .content(conteudoJson);
+                .content(conteudoJson)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isNotFound())
@@ -202,7 +226,9 @@ public class LancamentoResourceTest {
                 .put(API.concat("/{id}/atualizar-status"), ID_LANCAMENTO)
                 .accept(JSON)
                 .contentType(JSON)
-                .content("RANDOM");
+                .content("RANDOM")
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isBadRequest());
@@ -217,7 +243,9 @@ public class LancamentoResourceTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .delete(API.concat("/{id}"), ID_LANCAMENTO)
                 .content(JSON)
-                .contentType(JSON);
+                .contentType(JSON)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isNotFound())
@@ -238,7 +266,9 @@ public class LancamentoResourceTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .delete(API.concat("/{id}"), ID_LANCAMENTO)
                 .content(JSON)
-                .contentType(JSON);
+                .contentType(JSON)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isBadRequest());
@@ -257,7 +287,9 @@ public class LancamentoResourceTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .delete(API.concat("/{id}"), ID_LANCAMENTO)
                 .contentType(JSON)
-                .accept(JSON);
+                .accept(JSON)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isNoContent());
@@ -282,7 +314,9 @@ public class LancamentoResourceTest {
                 .post(API)
                 .contentType(JSON)
                 .accept(JSON)
-                .content(conteudoJson);
+                .content(conteudoJson)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isCreated())
@@ -312,7 +346,9 @@ public class LancamentoResourceTest {
                 .post(API)
                 .contentType(JSON)
                 .accept(JSON)
-                .content(conteudoJson);
+                .content(conteudoJson)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isBadRequest());
@@ -343,7 +379,9 @@ public class LancamentoResourceTest {
                 .put(API.concat("/{id}"), ID_LANCAMENTO)
                 .contentType(JSON)
                 .accept(JSON)
-                .content(conteudoJson);
+                .content(conteudoJson)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isOk())
@@ -371,7 +409,9 @@ public class LancamentoResourceTest {
                 .put(API.concat("/{id}"), ID_LANCAMENTO)
                 .accept(JSON)
                 .contentType(JSON)
-                .content(conteudoJson);
+                .content(conteudoJson)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isNotFound())
@@ -397,7 +437,9 @@ public class LancamentoResourceTest {
                 .put(API.concat("/{id}"), ID_LANCAMENTO)
                 .contentType(JSON)
                 .accept(JSON)
-                .content(conteudoJson);
+                .content(conteudoJson)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user("user@email.com").password("1234").roles("USER"));
 
         mvc.perform(request)
                 .andExpect(status().isBadRequest());
