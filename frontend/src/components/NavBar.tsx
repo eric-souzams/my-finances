@@ -1,10 +1,10 @@
 import { NavbarItem } from "./NavBarItem";
 import { Link } from 'react-router-dom';
-import { AuthConsumer } from "../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 
 export function NavBar() {
   return (
-    <AuthConsumer>
+    <AuthContext.Consumer>
       {(context) => (
         <div className="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
           <div className="container">
@@ -29,6 +29,6 @@ export function NavBar() {
           </div>
         </div>
       )}
-    </AuthConsumer>
+    </AuthContext.Consumer>
   );
 }

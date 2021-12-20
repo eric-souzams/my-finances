@@ -1,7 +1,9 @@
 package com.project.myfinances.config;
 
-import com.project.myfinances.service.impl.security.UserDetailsServiceImpl;
+import com.project.myfinances.service.JwtService;
+import com.project.myfinances.service.impl.UserDetailsServiceImpl;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @AllArgsConstructor
 @EnableWebSecurity
@@ -16,6 +19,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final PasswordEncoder encoder;
+    private final JwtService jwtService;
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtService, userDetailsService);
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -28,13 +37,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .   httpBasic();
+                    .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        String password = encoder.encode("123");
-
         auth
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(encoder);

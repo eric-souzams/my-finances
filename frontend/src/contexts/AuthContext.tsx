@@ -1,18 +1,28 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 import AuthService from "../services/authService";
+import jwt from 'jsonwebtoken';
 
 type AuthContextType = {
   isAuthenticated: boolean;
   authenticatedUser: User | undefined;
-  startSession: (user: User) => void;
+  startSession: (token: TokenDTO) => void;
   endSession: () => void;
 }
 
 type User = {
   id: number;
   nome: string;
-  email: string;
-  dataCadastro: Array<number>;
+}
+
+type TokenDTO = {
+  token: string;
+}
+
+type TokenProps = {
+  sub: string;
+  exp: number;
+  userId: number;
+  userName: string;
 }
 
 type AuthContextProviderProps = {
@@ -20,14 +30,22 @@ type AuthContextProviderProps = {
 }
 
 export const AuthContext = createContext({} as AuthContextType);
-export const AuthConsumer = AuthContext.Consumer;
 
 export function AuthContextProvider(props: AuthContextProviderProps) {
   const [authenticatedUser, setAuthenticatedUser] = useState<User>();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  function startSession(user: User) {
-    AuthService.signIn(user);
+  function startSession(tokenDTO: TokenDTO) {
+    const token = tokenDTO.token;
+    const claims = jwt.decode(token) as TokenProps;
+    const user: User = {
+      id: claims.userId,
+      nome: claims.userName
+    }
+
+    AuthService.signIn(user, { token });
+
     setIsAuthenticated(true);
     setAuthenticatedUser(user);
   }
@@ -38,13 +56,30 @@ export function AuthContextProvider(props: AuthContextProviderProps) {
     setAuthenticatedUser(undefined);
   }
 
+  useEffect(() => {
+    const isAuthenticatedUser = AuthService.isAuthenticatedUser();
+
+    if (isAuthenticatedUser) {
+      const user: User = AuthService.refreshSession();
+      setIsAuthenticated(true);
+      setAuthenticatedUser(user);
+      setIsLoading(false);
+    } else {
+      setIsLoading(prevIsLoading => false);
+    }
+  }, [])
+
+  if (isLoading) {
+    return null;
+  }
+
   return (
-    <AuthContext.Provider 
-      value={{ 
-        isAuthenticated, 
-        authenticatedUser, 
-        startSession, 
-        endSession 
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        authenticatedUser,
+        startSession,
+        endSession
       }}
     >
       {props.children}

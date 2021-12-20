@@ -1,4 +1,4 @@
-package com.project.myfinances.service.impl.security;
+package com.project.myfinances.service.impl;
 
 import com.project.myfinances.model.entity.Usuario;
 import com.project.myfinances.repository.UsuarioRepository;
