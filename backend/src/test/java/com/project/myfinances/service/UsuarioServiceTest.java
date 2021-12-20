@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -29,12 +30,16 @@ public class UsuarioServiceTest {
     private static final String NOME = "Usuario";
     private static final String EMAIL = "usuario@email.com";
     private static final String SENHA = "1234";
+    private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjYwMDE2NDAwMjYxMjAsInN1YiI6ImVyaWMzQGVtYWlsLmNvbSIsInVzZXJOYW1lIjoiRXJpYyBNYWdhbGhhZXMiLCJ1c2VySWQiOjE5fQ.4iRue9c4q4O-S_gl20fNi2BmYUfIYo5Po5flmrBjuoAzZFOqRSjETEPwRLkvQTdCl2S81ig1th8BhedDB6Py1Q";
 
     @SpyBean
     UsuarioServiceImpl service;
 
     @MockBean
     UsuarioRepository repository;
+
+    @MockBean
+    PasswordEncoder passwordEncoder;
 
     @Test
     void deveSalvarUsuario() {
@@ -69,10 +74,12 @@ public class UsuarioServiceTest {
     @Test
     void deveAutenticarUmUsuarioComSucesso() {
         //given
-        Usuario usuario = Usuario.builder().id(ID).nome(NOME).email(EMAIL).senha(SENHA).build();
+        String encryptedPassword = passwordEncoder.encode(SENHA);
+        Usuario usuario = Usuario.builder().id(ID).nome(NOME).email(EMAIL).senha(encryptedPassword).build();
 
         //when
         when(repository.findByEmail(EMAIL)).thenReturn(Optional.of(usuario));
+        when(passwordEncoder.matches(SENHA, usuario.getSenha())).thenReturn(true);
 
         //then
         Usuario result = assertDoesNotThrow(() -> service.autenticar(EMAIL, SENHA));

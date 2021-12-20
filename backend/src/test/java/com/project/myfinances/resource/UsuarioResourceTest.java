@@ -2,12 +2,15 @@ package com.project.myfinances.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.myfinances.dto.LoginDTO;
+import com.project.myfinances.dto.TokenDTO;
 import com.project.myfinances.dto.UsuarioDTO;
 import com.project.myfinances.exceptions.ErroAutenticacaoException;
 import com.project.myfinances.exceptions.RegraNegocioException;
 import com.project.myfinances.model.entity.Usuario;
 import com.project.myfinances.service.LancamentoService;
 import com.project.myfinances.service.UsuarioService;
+import com.project.myfinances.service.impl.JwtServiceImpl;
+import com.project.myfinances.service.impl.UserDetailsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,6 +43,8 @@ public class UsuarioResourceTest {
     private static final String SENHA = "1234";
     private static final Long ID = 1L;
     private static final String NOME = "Usuario";
+    private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjYwMDE2NDAwMjYxMjAsInN1YiI6ImVyaWMzQGVtYWlsLmNvbSIsInVzZXJOYW1lIjoiRXJpYyBNYWdhbGhhZXMiLCJ1c2VySWQiOjE5fQ.4iRue9c4q4O-S_gl20fNi2BmYUfIYo5Po5flmrBjuoAzZFOqRSjETEPwRLkvQTdCl2S81ig1th8BhedDB6Py1Q";
+    private static final String ROLES = "USER";
 
     private static final String API = "/api/usuarios";
     private static final String JSON = MediaType.APPLICATION_JSON_VALUE;
@@ -51,15 +58,26 @@ public class UsuarioResourceTest {
     @MockBean
     LancamentoService lancamentoService;
 
+    @MockBean
+    UserDetailsServiceImpl userDetailsService;
+
+    @MockBean
+    PasswordEncoder passwordEncoder;
+
+    @MockBean
+    JwtServiceImpl jwtService;
+
     @Test
     void deveAutenticarUmUsuario() throws Exception {
         //given
         LoginDTO dto = LoginDTO.builder().email(EMAIL).senha(SENHA).build();
         Usuario usuario = Usuario.builder().id(ID).nome(NOME).email(EMAIL).senha(SENHA).build();
+        TokenDTO tokenDTO = TokenDTO.builder().token(TOKEN).build();
         String conteudoJson = new ObjectMapper().writeValueAsString(dto);
 
         //when
         when(service.autenticar(EMAIL, SENHA)).thenReturn(usuario);
+        when(jwtService.generateToken(usuario)).thenReturn(TOKEN);
 
         //then
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
@@ -70,9 +88,7 @@ public class UsuarioResourceTest {
 
         mvc.perform(request)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("id").value(usuario.getId()))
-                .andExpect(jsonPath("nome").value(usuario.getNome()))
-                .andExpect(jsonPath("email").value(usuario.getEmail()));
+                .andExpect(jsonPath("token").value(tokenDTO.getToken()));
     }
 
     @Test
@@ -153,7 +169,9 @@ public class UsuarioResourceTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .get(API.concat("/{id}/saldo"), ID)
                 .content(JSON)
-                .contentType(JSON);
+                .contentType(JSON)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user(EMAIL).password(SENHA).roles(ROLES));
 
         mvc.perform(request)
                 .andExpect(status().isOk())
@@ -168,7 +186,9 @@ public class UsuarioResourceTest {
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .get(API.concat("/{id}/saldo"), ID)
                 .content(JSON)
-                .contentType(JSON);
+                .contentType(JSON)
+                .header("Authorization", "Bearer " + TOKEN)
+                .with(SecurityMockMvcRequestPostProcessors.user(EMAIL).password(SENHA).roles(ROLES));
 
         mvc.perform(request)
                 .andExpect(status().isNotFound());

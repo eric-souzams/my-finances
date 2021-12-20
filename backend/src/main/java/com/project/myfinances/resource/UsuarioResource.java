@@ -1,11 +1,13 @@
 package com.project.myfinances.resource;
 
 import com.project.myfinances.dto.LoginDTO;
+import com.project.myfinances.dto.TokenDTO;
 import com.project.myfinances.dto.UsuarioDTO;
 
 import com.project.myfinances.exceptions.ErroAutenticacaoException;
 import com.project.myfinances.exceptions.RegraNegocioException;
 import com.project.myfinances.model.entity.Usuario;
+import com.project.myfinances.service.JwtService;
 import com.project.myfinances.service.LancamentoService;
 import com.project.myfinances.service.UsuarioService;
 
@@ -26,12 +28,18 @@ public class UsuarioResource {
 
     private UsuarioService service;
     private LancamentoService lancamentoService;
+    private JwtService jwtService;
 
     @PostMapping(value = "/autenticar", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> autenticar(@RequestBody LoginDTO dto) {
         try {
             Usuario usuarioAutenticado = service.autenticar(dto.getEmail(), dto.getSenha());
-            return ResponseEntity.ok(usuarioAutenticado);
+
+            TokenDTO token = TokenDTO.builder()
+                    .token(jwtService.generateToken(usuarioAutenticado))
+                    .build();
+
+            return ResponseEntity.ok(token);
         } catch (ErroAutenticacaoException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
