@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+@Slf4j
 @Service
 public class JwtServiceImpl implements JwtService {
 
@@ -31,6 +33,7 @@ public class JwtServiceImpl implements JwtService {
         Instant instant = dateTimeExpiration.atZone(ZoneId.systemDefault()).toInstant();
         Date dateExpiration = Date.from(instant);
 
+        log.info("New token generated to user: {}", user.getEmail());
         return Jwts.builder()
                 .setExpiration(dateExpiration)
                 .setSubject(user.getEmail())

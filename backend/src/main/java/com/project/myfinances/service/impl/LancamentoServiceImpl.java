@@ -7,6 +7,7 @@ import com.project.myfinances.model.enums.TipoLancamento;
 import com.project.myfinances.repository.LancamentoRepository;
 import com.project.myfinances.service.LancamentoService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class LancamentoServiceImpl implements LancamentoService {
@@ -32,6 +34,7 @@ public class LancamentoServiceImpl implements LancamentoService {
         lancamento.setDataCadastro(LocalDateTime.now());
         lancamento.setStatus(StatusLancamento.PENDENTE);
 
+        log.info("Saving new release '{}' to the database", lancamento.getDescricao());
         return repository.save(lancamento);
     }
 
@@ -41,6 +44,7 @@ public class LancamentoServiceImpl implements LancamentoService {
         Objects.requireNonNull(lancamento.getId());
         validar(lancamento);
 
+        log.info("Updating release '{}' from: {}", lancamento.getId(), lancamento.getUsuario().getNome());
         return repository.save(lancamento);
     }
 
@@ -49,6 +53,7 @@ public class LancamentoServiceImpl implements LancamentoService {
     public void deletar(Lancamento lancamento) {
         Objects.requireNonNull(lancamento.getId());
 
+        log.info("Deleting release {} from the database", lancamento.getId());
         repository.delete(lancamento);
     }
 

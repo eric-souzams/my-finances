@@ -6,6 +6,7 @@ import com.project.myfinances.model.entity.Usuario;
 import com.project.myfinances.repository.UsuarioRepository;
 import com.project.myfinances.service.UsuarioService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @AllArgsConstructor
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
@@ -25,12 +27,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         Optional<Usuario> usuario = repository.findByEmail(email);
 
         if (usuario.isEmpty()) {
+            log.info("Not found user '{}' into the database", email);
             throw new ErroAutenticacaoException("Usuário não encontrado.");
         }
 
         boolean isMatcher = encoder.matches(senha, usuario.get().getSenha());
 
         if (!isMatcher) {
+            log.info("Password from '{}' doesn't matcher with saved password", email);
             throw new ErroAutenticacaoException("Email ou senha inválida.");
         }
 
@@ -46,6 +50,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         String encryptedPassword = encoder.encode(usuario.getSenha());
         usuario.setSenha(encryptedPassword);
 
+        log.info("Saving new user '{}' to the database", usuario.getEmail());
         return repository.save(usuario);
     }
 
